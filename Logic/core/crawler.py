@@ -26,7 +26,6 @@ class IMDbCrawler:
         crawling_threshold: int
             The number of pages to crawl
         """
-        # TODO
         self.crawling_threshold = crawling_threshold
         self.not_crawled = []
         self.crawled = []
@@ -55,8 +54,8 @@ class IMDbCrawler:
         """
         Save the crawled files into json
         """
-        with open('data.json', 'w', encoding='utf-8') as f:
-            json.dump(self.crawled, f, ensure_ascii=False, indent=4)
+        with open('../IMDB_Crawled.json', 'w', encoding='utf-8') as f:
+            json.dump(self.crawled, f, indent=4)
 
     def read_from_file_as_json(self):
         """
@@ -128,11 +127,6 @@ class IMDbCrawler:
     def start_crawling(self):
         """
         Start crawling the movies until the crawling threshold is reached.
-        TODO: 
-            replace WHILE_LOOP_CONSTRAINTS with the proper constraints for the while loop.
-            replace NEW_URL with the new URL to crawl.
-            replace THERE_IS_NOTHING_TO_CRAWL with the condition to check if there is nothing to crawl.
-            delete help variables.
 
         ThreadPoolExecutor is used to make the crawler faster by using multiple threads to crawl the pages.
         You are free to use it or not. If used, not to forget safe access to the shared resources.
@@ -142,7 +136,7 @@ class IMDbCrawler:
         futures = []
         crawled_counter = 0
 
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=25) as executor:
             while crawled_counter < self.crawling_threshold:
                 URL = self.not_crawled.pop(0)
                 futures.append(executor.submit(self.crawl_page_info, URL))
@@ -184,7 +178,6 @@ class IMDbCrawler:
         URL: str
             The URL of the site
         """
-        # TODO
         soup = BeautifulSoup(res.text, 'html5lib')
         movie['id'] = self.get_id_from_URL(URL)
         movie['title'] = self.get_title(soup)
@@ -299,7 +292,7 @@ class IMDbCrawler:
                 directors_cum = directors.findNext().get_text('$', strip=True)
                 return directors_cum.split("$")
             director = director.findNext()
-            return director.text
+            return [director.text]
         except:
             print("failed to get director")
 
@@ -342,7 +335,7 @@ class IMDbCrawler:
                 writers_cum = writers.findNext().get_text('$', strip=True)
                 return writers_cum.split("$")
             writer = writer.findNext()
-            return writer.text
+            return [writer.text]
         except:
             print("failed to get writers")
 
@@ -442,6 +435,8 @@ class IMDbCrawler:
                 score = review.find('span', {'class': 'point-scale'})
                 if score is not None:
                     score = score.previousSibling.text
+                else:
+                    score = '-'
                 text = review.find('div', {'class': 'text show-more__control'})
                 if text is not None:
                     text = text.text
@@ -617,7 +612,7 @@ class IMDbCrawler:
 
 
 def main():
-    imdb_crawler = IMDbCrawler(crawling_threshold=1000)
+    imdb_crawler = IMDbCrawler(crawling_threshold=1200)
     # imdb_crawler.read_from_file_as_json()
     imdb_crawler.start_crawling()
     imdb_crawler.write_to_file_as_json()
