@@ -12,7 +12,7 @@ def type_check(obj, expected_type):
 
 
 def check_field_types(json_file_path, expected_fields):
-    with open(json_file_path, "r") as file:
+    with open(json_file_path, "r", encoding='utf-8') as file:
         data = json.load(file)
     # check len of the data
     assert len(data) >= 1000, f"Expected at least 1000 movies, but got {len(data)}"
