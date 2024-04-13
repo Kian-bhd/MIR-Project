@@ -1,8 +1,7 @@
 import json
 import string
 import re
-from indexer import index
-
+import os
 import nltk
 from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
@@ -15,7 +14,7 @@ nltk.download("omw-1.4")
 
 class Preprocessor:
 
-    def __init__(self, documents: list):
+    def __init__(self, documents: list, json=False):
         """
         Initialize the class.
 
@@ -25,10 +24,11 @@ class Preprocessor:
             The list of documents to be preprocessed, path to stop words, or other parameters.
         """
         self.documents = documents
-        stopwords_file = open("stopwords.txt", "r")
+        stopwords_file = open("core/stopwords.txt", "r")
         self.stopwords = [x for x in stopwords_file.readlines()]
         stopwords_file.close()
         self.WNL = WordNetLemmatizer()
+        self.json = json
 
     def preprocess(self):
         """
@@ -39,19 +39,28 @@ class Preprocessor:
         List[json]
             The preprocessed documents.
         """
-        for doc in self.documents:
-            review_string = []
-            for review in doc['reviews']:
-                review_string.append(review[0])
-                review_string.append(review[1])
-            doc['reviews'] = ' '.join(review_string)
-            for key in doc.keys():
-                if isinstance(doc[key], list):
-                    doc[key] = ' '.join(doc[key])
-                doc[key] = self.normalize(doc[key])
-                doc[key] = self.remove_links(doc[key])
-                doc[key] = self.remove_punctuations(doc[key])
-                doc[key] = self.remove_stopwords(doc[key])
+        if self.json:
+            for doc in self.documents:
+                review_string = []
+                print(doc)
+                for review in doc['reviews']:
+                    review_string.append(review[0])
+                    review_string.append(review[1])
+                doc['reviews'] = ' '.join(review_string)
+                for key in doc.keys():
+                    if isinstance(doc[key], list):
+                        doc[key] = ' '.join(doc[key])
+                    doc[key] = self.normalize(doc[key])
+                    doc[key] = self.remove_links(doc[key])
+                    doc[key] = self.remove_punctuations(doc[key])
+                    doc[key] = self.remove_stopwords(doc[key])
+        else:
+            for doc in self.documents:
+                doc = ' '.join(doc)
+                doc = self.normalize(doc)
+                doc = self.remove_links(doc)
+                doc = self.remove_punctuations(doc)
+                doc = self.remove_stopwords(doc)
         return self.documents
 
     def normalize(self, text: str):
@@ -153,8 +162,8 @@ class Preprocessor:
 
 
 docs = []
-with open("../IMDB_Crawled.json", "r") as f:
+os.chdir('../Logic')
+with open("IMDB_Crawled.json", "r") as f:
     docs = json.load(f)
     f.close()
 docs = Preprocessor(docs).preprocess()
-ind = index.Index(docs)

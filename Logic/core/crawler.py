@@ -6,6 +6,8 @@ from concurrent.futures import ThreadPoolExecutor, wait
 from threading import Lock
 import json
 
+from Logic.core.preprocess import Preprocessor
+
 
 class IMDbCrawler:
     """
@@ -56,6 +58,11 @@ class IMDbCrawler:
         """
         with open('../IMDB_crawled.json', 'w', encoding='utf-8') as f:
             json.dump(self.crawled, f, indent=4)
+        print('preprocessing...')
+        preprocessor = Preprocessor(self.crawled)
+        with open('IMDB_crawled_pre_processed.json', 'w+') as f:
+            documents = json.dump(preprocessor.preprocess(), f, indent=1)
+            f.close()
 
     def read_from_file_as_json(self):
         """
@@ -616,6 +623,7 @@ def main():
     # imdb_crawler.read_from_file_as_json()
     imdb_crawler.start_crawling()
     imdb_crawler.write_to_file_as_json()
+
 
 
 if __name__ == '__main__':

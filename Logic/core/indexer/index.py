@@ -2,7 +2,7 @@ import time
 import os
 import json
 import copy
-from .indexes_enum import Indexes
+from indexes_enum import Indexes
 
 
 class Index:
@@ -12,7 +12,7 @@ class Index:
         """
 
         self.preprocessed_documents = preprocessed_documents
-        self.path = '/index'
+        self.path = 'index/'
 
         self.index = None
         try:
@@ -249,11 +249,8 @@ class Index:
         if not os.path.exists(path):
             os.makedirs(path)
 
-        if index_name not in self.index:
-            raise ValueError('Invalid index name')
-
-        with open(path + index_name + '_index.json', 'w+') as f:
-            f.write(json.dumps(self.index[index_name], indent=4))
+        with open(path + index_name.value + '_index.json', 'w+') as f:
+            f.write(json.dumps(self.index[index_name.value], indent=4))
             f.close()
 
     def load_index(self, path: str):
@@ -268,7 +265,7 @@ class Index:
 
         current_idx = {}
         for idx in Indexes:
-            f = open(path + idx + '.json', 'r')
+            f = open(path + idx.value + '.json', 'r')
             current_idx[idx.value] = json.load(f)
             f.close()
         return current_idx
@@ -319,7 +316,7 @@ class Index:
 
             for field in document[index_type]:
                 if check_word in field:
-                    docs.append(document['id'])
+                    docs.append(document['id'][0])
                     break
 
             # if we have found 3 documents with the word, we can break
@@ -331,7 +328,6 @@ class Index:
 
         # check by getting the posting list of the word
         start = time.time()
-        # TODO: based on your implementation, you may need to change the following line
         posting_list = self.get_posting_list(check_word, index_type)
 
         end = time.time()
@@ -340,6 +336,8 @@ class Index:
         print('Brute force time: ', brute_force_time)
         print('Implemented time: ', implemented_time)
 
+        print(docs)
+        print(posting_list)
         if set(docs).issubset(set(posting_list)):
             print('Indexing is correct')
 
@@ -353,4 +351,11 @@ class Index:
             print('Indexing is wrong')
             return False
 
-# TODO: Run the class with needed parameters, then run check methods and finally report the results of check methods
+# documents = None
+# with open('../IMDB_crawled_pre_processed.json', 'r') as f:
+#     documents = json.load(f)
+#     f.close()
+# idx = Index(documents)
+# for i in Indexes:
+#     assert idx.check_if_index_loaded_correctly(i.value, idx.index[i.value])
+# assert idx.check_if_indexing_is_good(Indexes.GENRES.value, 'action')

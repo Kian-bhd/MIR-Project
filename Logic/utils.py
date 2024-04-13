@@ -1,13 +1,25 @@
 from typing import Dict, List
-from core.search import SearchEngine
-from core.spell_correction import SpellCorrection
-from core.snippet import Snippet
-from core.indexer.indexes_enum import Indexes, Index_types
+from .core.search import SearchEngine
+from .core.spell_correction import SpellCorrection
+from .core.snippet import Snippet
+from .core.indexer.indexes_enum import Indexes, Index_types
 import json
 
-movies_dataset = None  # TODO
+movies_dataset = {}
+with open('IMDB_Crawled.json', 'r') as f:
+    j = json.load(f)
+    for doc in j:
+        movies_dataset[doc['id']] = [doc]
+    f.close()
 search_engine = SearchEngine()
 
+documents = None
+with open('core/IMDB_crawled_pre_processed.json', 'r') as f:
+    documents = json.load(f)
+    for doc in documents:
+        movies_dataset[doc['id'][0]].append(doc)
+    f.close()
+s = SpellCorrection(documents)
 
 def correct_text(text: str, all_documents: List[str]) -> str:
     """
@@ -24,7 +36,7 @@ def correct_text(text: str, all_documents: List[str]) -> str:
     str
         The corrected form of the given text
     """
-    # TODO: You can add any preprocessing steps here, if needed!
+    text = text.lower()
     spell_correction_obj = SpellCorrection(all_documents)
     text = spell_correction_obj.spell_check(text)
     return text
@@ -61,7 +73,11 @@ def search(
     list
     Retrieved documents with snippet
     """
-    weights = ...  # TODO
+    weights = {
+        Indexes.STARS: weights[0],
+        Indexes.GENRES: weights[1],
+        Indexes.SUMMARIES: weights[2]
+    }
     return search_engine.search(
         query, method, weights, max_results=max_result_count, safe_ranking=True
     )

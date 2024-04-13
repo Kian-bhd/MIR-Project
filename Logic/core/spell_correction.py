@@ -4,7 +4,7 @@ from Logic.core.indexer.indexes_enum import Indexes
 
 
 class SpellCorrection:
-    def __init__(self, all_documents, path='index/'):
+    def __init__(self, all_documents, path='core/indexer/index/'):
         """
         Initialize the SpellCorrection
 
