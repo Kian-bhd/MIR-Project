@@ -61,7 +61,20 @@ class Tiered_index:
         first_tier = {}
         second_tier = {}
         third_tier = {}
-        #TODO
+        for term, list_ in current_index.items():
+            for doc_id, tf in list_.items():
+                if tf >= first_tier_threshold:
+                    if term not in first_tier.keys():
+                        first_tier[term] = {}
+                    first_tier[term][doc_id] = tf
+                elif tf >= second_tier_threshold:
+                    if term not in second_tier.keys():
+                        second_tier[term] = {}
+                    second_tier[term][doc_id] = tf
+                else:
+                    if term not in third_tier.keys():
+                        third_tier[term] = {}
+                    third_tier[term][doc_id] = tf
         return {
             "first_tier": first_tier,
             "second_tier": second_tier,

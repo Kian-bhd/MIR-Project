@@ -54,7 +54,7 @@ class IMDbCrawler:
         """
         Save the crawled files into json
         """
-        with open('../IMDB_Crawled.json', 'w', encoding='utf-8') as f:
+        with open('../IMDB_crawled.json', 'w', encoding='utf-8') as f:
             json.dump(self.crawled, f, indent=4)
 
     def read_from_file_as_json(self):
@@ -612,7 +612,7 @@ class IMDbCrawler:
 
 
 def main():
-    imdb_crawler = IMDbCrawler(crawling_threshold=1200)
+    imdb_crawler = IMDbCrawler(crawling_threshold=25)
     # imdb_crawler.read_from_file_as_json()
     imdb_crawler.start_crawling()
     imdb_crawler.write_to_file_as_json()
