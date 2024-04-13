@@ -37,7 +37,7 @@ class SpellCorrection:
         shingles = set()
 
         if len(word) <= k:
-            return shingles.add(word)
+            shingles.add(word)
         for i in range(len(word) - k + 1):
             shingles.add(word[i:i + k])
         return shingles
@@ -58,7 +58,9 @@ class SpellCorrection:
         float
             Jaccard score.
         """
-
+        print(first_set)
+        print(second_set)
+        print("MEOW")
         return len(first_set.intersection(second_set)) / len(first_set.union(second_set))
 
     def shingling_and_counting(self, all_documents):
@@ -118,6 +120,8 @@ class SpellCorrection:
         """
         top5_candidates = [(0, None) for _ in range(5)]
         for term, tf in self.word_counter.items():
+            if term == word:
+                return [(100, word)]
             word_shingles = self.all_shingled_words[term]
             score = 0
             for k in range(3):

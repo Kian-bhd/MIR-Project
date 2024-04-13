@@ -162,7 +162,8 @@ class Preprocessor:
 
 
 docs = []
-os.chdir('../Logic')
+print(os.getcwd())
+os.chdir('./Logic')
 with open("IMDB_Crawled.json", "r") as f:
     docs = json.load(f)
     f.close()

@@ -37,7 +37,7 @@ def correct_text(text: str, all_documents: List[str]) -> str:
         The corrected form of the given text
     """
     text = text.lower()
-    spell_correction_obj = SpellCorrection(all_documents)
+    spell_correction_obj = SpellCorrection(documents)
     text = spell_correction_obj.spell_check(text)
     return text
 
@@ -110,8 +110,9 @@ def get_movie_by_id(id: str, movies_dataset: List[Dict[str, str]]) -> Dict[str, 
             "Genres": ["Drama", "Crime"],
             "Image_URL": "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg",
         },
-    )
+    )[0]
 
+    print(result)
     result["Image_URL"] = (
         "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg"  # a default picture for selected movies
     )
