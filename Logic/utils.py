@@ -4,8 +4,11 @@ from .core.spell_correction import SpellCorrection
 from .core.snippet import Snippet
 from .core.indexer.indexes_enum import Indexes, Index_types
 import json
+import os
 
 movies_dataset = {}
+
+os.chdir('Logic/')
 with open('IMDB_Crawled.json', 'r') as f:
     j = json.load(f)
     for doc in j:
@@ -114,7 +117,7 @@ def get_movie_by_id(id: str, movies_dataset: List[Dict[str, str]]) -> Dict[str, 
 
     print(result)
     result["Image_URL"] = (
-        "https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_.jpg"  # a default picture for selected movies
+        "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_.jpg"  # a default picture for selected movies
     )
     result["URL"] = (
         f"https://www.imdb.com/title/{result['id']}"  # The url pattern of IMDb movies

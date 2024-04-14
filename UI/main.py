@@ -20,8 +20,8 @@ class color(Enum):
     RED = "#FF0000"
     GREEN = "#00FF00"
     BLUE = "#0000FF"
-    YELLOW = "#FFFF00"
-    WHITE = "#FFFFFF"
+    # YELLOW = "#FFFF00"
+    # WHITE = "#FFFFFF"
     CYAN = "#00FFFF"
     MAGENTA = "#FF00FF"
 
@@ -35,7 +35,7 @@ def get_summary_with_snippet(movie_info, query):
             current_word = snippet[i]
             if current_word.startswith("***") and current_word.endswith("***"):
                 current_word_without_star = current_word[3:-3]
-                summary = summary.lower().replace(
+                summary = summary.replace(
                     current_word_without_star,
                     f"<b><font size='4' color={random.choice(list(color)).value}>{current_word_without_star}</font></b>",
                 )

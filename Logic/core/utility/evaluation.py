@@ -24,8 +24,18 @@ class Evaluation:
         """
         precision = 0.0
 
-        # TODO: Calculate precision here
-        
+        true_positives = 0
+        false_positives = 0
+
+        for i in range(len(predicted)):
+            for item in predicted[i]:
+                if item in actual[i]:
+                    true_positives += 1
+                else:
+                    false_positives += 1
+        if true_positives + false_positives > 0:
+            precision = true_positives / (true_positives + false_positives)
+
         return precision
     
     def calculate_recall(self, actual: List[List[str]], predicted: List[List[str]]) -> float:
@@ -46,8 +56,18 @@ class Evaluation:
         """
         recall = 0.0
 
-        # TODO: Calculate recall here
+        true_positives = 0
+        false_negatives = 0
 
+        for i in range(len(actual)):
+            for item in actual[i]:
+                if item in predicted[i]:
+                    true_positives += 1
+                else:
+                    false_negatives += 1
+
+        if true_positives + false_negatives > 0:
+            recall = true_positives / (true_positives + false_negatives)
         return recall
     
     def calculate_F1(self, actual: List[List[str]], predicted: List[List[str]]) -> float:
@@ -68,7 +88,11 @@ class Evaluation:
         """
         f1 = 0.0
 
-        # TODO: Calculate F1 here
+        recall = self.calculate_recall(actual, predicted)
+        precision = self.calculate_precision(actual, predicted)
+
+        if (precision + recall) > 0:
+            f1 = precision * recall * 2 / (precision + recall)
 
         return f1
     

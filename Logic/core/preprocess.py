@@ -42,7 +42,6 @@ class Preprocessor:
         if self.json:
             for doc in self.documents:
                 review_string = []
-                print(doc)
                 for review in doc['reviews']:
                     review_string.append(review[0])
                     review_string.append(review[1])
@@ -78,6 +77,8 @@ class Preprocessor:
             The normalized text.
         """
         norm_str = []
+        if text is None:
+            return ''
         for x in text.split():
             lwr_x = x.lower()
             lemm_x = self.WNL.lemmatize(lwr_x, pos="v")
@@ -161,10 +162,13 @@ class Preprocessor:
         return filtered_sentence
 
 
-docs = []
-print(os.getcwd())
-os.chdir('./Logic')
-with open("IMDB_Crawled.json", "r") as f:
-    docs = json.load(f)
-    f.close()
-docs = Preprocessor(docs).preprocess()
+# docs = []
+# os.chdir("Logic")
+# with open("IMDB_Crawled.json", "r") as f:
+#     docs = json.load(f)
+#     f.close()
+# with open('IMDB_crawled_pre_processed.json', 'w+') as f:
+#     preprocessor = Preprocessor(docs, json=True)
+#     json.dump(preprocessor.preprocess(), f, indent=1)
+#     f.close()
+

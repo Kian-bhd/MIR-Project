@@ -195,7 +195,7 @@ class Scorer:
 
         result = {}
         for doc in self.get_list_of_documents(query):
-            score = self.get_vector_space_model_score(query, doc, average_document_field_length, document_lengths[doc])
+            score = self.get_okapi_bm25_score(query, doc, average_document_field_length, document_lengths[doc])
             result[doc] = score
         return result
 

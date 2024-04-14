@@ -58,9 +58,6 @@ class SpellCorrection:
         float
             Jaccard score.
         """
-        print(first_set)
-        print(second_set)
-        print("MEOW")
         return len(first_set.intersection(second_set)) / len(first_set.union(second_set))
 
     def shingling_and_counting(self, all_documents):
