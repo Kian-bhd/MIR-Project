@@ -87,7 +87,11 @@ class SearchEngine:
         query = preprocessor.preprocess()[0].split()
 
         scores = {}
-        if safe_ranking:
+        if method == "unigram":
+            self.find_scores_with_unigram_model(
+                query, smoothing_method, weights, scores, alpha, lamda
+            )
+        elif safe_ranking:
             self.find_scores_with_safe_ranking(query, method, weights, scores)
         else:
             self.find_scores_with_unsafe_ranking(query, method, weights, max_results, scores)
@@ -146,7 +150,7 @@ class SearchEngine:
                 scorer = Scorer(index=self.document_indexes[field].index,
                                 number_of_documents=self.metadata_index.index['document_count'])
                 if method == 'OkapiBM25':
-                    res = scorer.compute_socres_with_okapi_bm25(query, average_document_field_length=
+                    res = scorer.compute_scores_with_okapi_bm25(query, average_document_field_length=
                     self.metadata_index.index['averge_document_length'][field.value],
                                                                 document_lengths=self.document_lengths_index[
                                                                     field].index)
@@ -179,11 +183,40 @@ class SearchEngine:
                             number_of_documents=self.metadata_index.index['document_count'])
             scores[field] = {}
             if method == 'OkapiBM25':
-                res = scorer.compute_socres_with_okapi_bm25(query, average_document_field_length=
+                res = scorer.compute_scores_with_okapi_bm25(query, average_document_field_length=
                 self.metadata_index.index['averge_document_length'][field.value],
                                                             document_lengths=self.document_lengths_index[field].index)
             else:
                 res = scorer.compute_scores_with_vector_space_model(query, method)
+            scores[field] = res
+
+    def find_scores_with_unigram_model(
+            self, query, smoothing_method, weights, scores, alpha=0.5, lamda=0.5
+    ):
+        """
+        Calculates the scores for each document based on the unigram model.
+
+        Parameters
+        ----------
+        query : str
+            The query to search for.
+        smoothing_method : str (bayes | naive | mixture)
+            The method used for smoothing the probabilities in the unigram model.
+        weights : dict
+            A dictionary mapping each field (e.g., 'stars', 'genres', 'summaries') to its weight in the final score. Fields with a weight of 0 are ignored.
+        scores : dict
+            The scores of the documents.
+        alpha : float, optional
+            The parameter used in bayesian smoothing method. Defaults to 0.5.
+        lamda : float, optional
+            The parameter used in some smoothing methods to balance between the document
+            probability and the collection probability. Defaults to 0.5.
+        """
+        for field in weights:
+            scorer = Scorer(index=self.document_indexes[field].index,
+                            number_of_documents=self.metadata_index.index['document_count'])
+            scores[field] = {}
+            res = scorer.compute_scores_with_unigram_model(query, smoothing_method,  self.document_lengths_index[field].index, alpha, lamda)
             scores[field] = res
 
     def merge_scores(self, scores1, scores2):
