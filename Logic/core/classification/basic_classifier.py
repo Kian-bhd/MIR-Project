@@ -29,5 +29,13 @@ class BasicClassifier:
         float
             The percentage of positive reviews
         """
-        pass
+        positives = 0
+        fasttext_model = FastText(method='skipgram')
+        fasttext_model.load_model('FastText_model.bin')
+        for sentence in tqdm(sentences):
+            prediction = self.predict([fasttext_model.get_query_embedding(sentence)])[0]
+            if prediction == 1:
+                positives += 1
+
+        return (positives / len(sentences)) * 100
 
