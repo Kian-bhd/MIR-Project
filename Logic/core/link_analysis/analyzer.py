@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from graph import LinkGraph
 # from ..indexer.indexes_enum import Indexes
 # from ..indexer.index_reader import Index_reader
@@ -104,9 +106,11 @@ class LinkAnalyzer:
                 if star_score > 0:
                     a_s[movie] = star_score
         print(a_s)
-        a_s = collections.OrderedDict(a_s)
-        h_s = collections.OrderedDict(h_s)
-        return a_s, h_s
+        a_s = [(k, v) for k, v in a_s.items()]
+        h_s = [(k, v) for k, v in h_s.items()]
+        a_s = sorted(a_s, key=itemgetter(1), reverse=True)
+        h_s = sorted(h_s, key=itemgetter(1), reverse=True)
+        return a_s[:10], h_s[:10]
 
 if __name__ == "__main__":
     # You can use this section to run and test the results of your link analyzer

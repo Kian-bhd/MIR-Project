@@ -12,33 +12,35 @@ from .clustering_utils import ClusteringUtils
 # Main Function: Clustering Tasks
 
 # 0. Embedding Extraction
-# TODO: Using the previous preprocessor and fasttext model, collect all the embeddings of our data and store them.
-
+ft_model = FastText()
+path = 'IMDB_crawled_give.json'
+ft_data_loader = FastTextDataLoader(path)
+X, y = ft_data_loader.create_train_data()
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=7)
+ft_model.prepare(None, 'load')
+embeddings = [ft_model.get_query_embedding(sentence) for sentence in X_train]
 # 1. Dimension Reduction
-# TODO: Perform Principal Component Analysis (PCA):
-#     - Reduce the dimensionality of features using PCA. (you can use the reduced feature afterward or use to the whole embeddings)
-#     - Find the Singular Values and use the explained_variance_ratio_ attribute to determine the percentage of variance explained by each principal component.
-#     - Draw plots to visualize the results.
+print('PCA')
+dim = DimensionReduction()
+pca_reduced_features = dim.pca_reduce_dimension(embeddings, 5)
 
-# TODO: Implement t-SNE (t-Distributed Stochastic Neighbor Embedding):
-#     - Create the convert_to_2d_tsne function, which takes a list of embedding vectors as input and reduces the dimensionality to two dimensions using the t-SNE method.
-#     - Use the output vectors from this step to draw the diagram.
+print('TSNE')
+tsne_reduced_features = dim.convert_to_2d_tsne(embeddings)
 
 # 2. Clustering
 ## K-Means Clustering
-# TODO: Implement the K-means clustering algorithm from scratch.
-# TODO: Create document clusters using K-Means.
-# TODO: Run the algorithm with several different values of k.
-# TODO: For each run:
-#     - Determine the genre of each cluster based on the number of documents in each cluster.
-#     - Draw the resulting clustering using the two-dimensional vectors from the previous section.
-#     - Check the implementation and efficiency of the algorithm in clustering similar documents.
-# TODO: Draw the silhouette score graph for different values of k and perform silhouette analysis to choose the appropriate k.
-# TODO: Plot the purity value for k using the labeled data and report the purity value for the final k. (Use the provided functions in utilities)
+# Implement the K-means clustering algorithm from scratch.
+metrics = ClusteringMetrics()
+utils = ClusteringUtils
+centers, clusters = utils.cluster_kmeans(pca_reduced_features.tolist(), 20)
+utils.visualize_kmeans_clustering_wandb(pca_reduced_features, 20, 'kmeans_prj', 'kmeans_run')
+
+for k in range(1, 50):
+    centers, clusters = utils.cluster_kmeans(pca_reduced_features.tolist(), k)
+    utils.visualize_kmeans_clustering_wandb(pca_reduced_features, k, 'kmeans_prj', 'kmeans_run')
 
 ## Hierarchical Clustering
-# TODO: Perform hierarchical clustering with all different linkage methods.
-# TODO: Visualize the results.
+utils.wandb_plot_hierarchical_clustering_dendrogram(embeddings, 'dendrogram_prj', 'average', 'dendrogram_run')
 
 # 3. Evaluation
-# TODO: Using clustering metrics, evaluate how well your clustering method is performing.
+utils.plot_kmeans_cluster_scores(pca_reduced_features, y_train, [i for i in range(50)], 'kmeans_prj', 'kmeans_run')
